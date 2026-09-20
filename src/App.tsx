@@ -22,9 +22,9 @@ function App() {
       }
     });
 
-    // Add ws-flexbox class if any flexbox variant is selected
+    // Add tw-flex class if any flexbox variant is selected
     if (hasFlexboxSelection) {
-      classes.push('ws-flexbox');
+      classes.push('tw-flex');
     }
     
     defaultConfig.blocks.forEach((block) => {
@@ -115,11 +115,12 @@ function App() {
       <main className="app-main">
 
         <div className="switches-section">
-          {(['text', 'margin', 'padding', 'flexbox', 'other'] as const).map((category) => {
+          {(['block', 'flexbox', 'text', 'margin', 'padding', 'other'] as const).map((category) => {
             const categoryBlocks = defaultConfig.blocks.filter((block) => block.category === category);
             if (categoryBlocks.length === 0) return null;
 
             const categoryLabels: Record<typeof category, string> = {
+              block: 'Block',
               text: 'Text',
               margin: 'Margin',
               padding: 'Padding',

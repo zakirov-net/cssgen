@@ -8,7 +8,7 @@ export interface Variant {
   icon?: React.ReactNode | ((flexDirection?: string) => React.ReactNode); // SVG icon for visual representation, can be dynamic based on flex-direction
 }
 
-export type BlockCategory = 'text' | 'margin' | 'padding' | 'flexbox' | 'other';
+export type BlockCategory = 'text' | 'margin' | 'padding' | 'flexbox' | 'other' | 'block';
 
 export interface SwitchBlock {
   id: string;
