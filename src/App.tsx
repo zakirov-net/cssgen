@@ -84,7 +84,7 @@ function App() {
 
   return (
     <div className="app">
-      <div className="sticky-header-section">
+      <div className="left-panel">
         <header className="app-header">
           <h1>CSS Class Generator</h1>
         </header>
@@ -112,10 +112,10 @@ function App() {
         </div>
       </div>
       
-      <main className="app-main">
+      <main className="right-panel">
 
         <div className="switches-section">
-          {(['block', 'flexbox', 'text', 'margin', 'padding', 'other'] as const).map((category) => {
+          {(['flexbox', 'block', 'text', 'margin', 'padding', 'other'] as const).map((category) => {
             const categoryBlocks = defaultConfig.blocks.filter((block) => block.category === category);
             if (categoryBlocks.length === 0) return null;
 

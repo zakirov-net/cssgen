@@ -14,54 +14,57 @@ body {
   min-height: 100vh;
 }
 
+/* ===== Two-column full-width layout ===== */
+
 .app {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px 24px 24px;
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
 }
 
-.sticky-header-section {
+/* ------ Left panel (fixed ~30%) ------ */
+
+.left-panel {
   position: sticky;
   top: 0;
-  z-index: 100;
+  flex: 0 0 30%;
+  min-width: 280px;
+  height: 100vh;
+  overflow-y: auto;
   background: #667eea;
-  padding: 24px 24px 0 24px;
-  margin: 0 -24px 24px -24px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
 }
 
 .app-header {
-  text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .app-header h1 {
   color: white;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 700;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   margin: 0;
-}
-
-.app-main {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  line-height: 1.2;
 }
 
 .output-section {
   background: white;
   border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  margin: 0 24px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .output-label {
   display: block;
   font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   color: #333;
-  font-size: 16px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .output-textarea {
@@ -70,9 +73,9 @@ body {
   border: 2px solid #e0e0e0;
   border-radius: 6px;
   font-family: 'Courier New', monospace;
-  font-size: 14px;
+  font-size: 13px;
   resize: vertical;
-  min-height: 100px;
+  min-height: 120px;
   background: #fafafa;
   color: #333;
 }
@@ -85,15 +88,16 @@ body {
 
 .button-group {
   display: flex;
-  gap: 12px;
-  margin-top: 16px;
+  gap: 10px;
+  margin-top: 14px;
 }
 
 .btn {
-  padding: 10px 24px;
+  flex: 1;
+  padding: 10px 16px;
   border: none;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -127,16 +131,26 @@ body {
   transform: translateY(0);
 }
 
+/* ------ Right panel (scrollable ~70%) ------ */
+
+.right-panel {
+  flex: 1;
+  overflow-y: auto;
+  height: 100vh;
+  padding: 32px 32px 48px;
+  background: #5a6fd6;
+}
+
 .switches-section {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 28px;
 }
 
 .block-category {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .category-heading {
@@ -145,8 +159,8 @@ body {
   color: white;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   margin: 0;
-  padding: 12px 0;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 10px 0 8px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.25);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -154,7 +168,7 @@ body {
 }
 
 .category-heading:hover {
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 .category-toggle-icon {
@@ -168,12 +182,30 @@ body {
 .category-blocks {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
+
+/* ------ Responsive: stack vertically on mobile ------ */
 
 @media (max-width: 768px) {
   .app {
-    padding: 16px;
+    flex-direction: column;
+  }
+
+  .left-panel {
+    position: static;
+    flex: none;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    min-height: 0;
+    padding: 24px 16px;
+  }
+
+  .right-panel {
+    height: auto;
+    overflow-y: visible;
+    padding: 24px 16px;
   }
 
   .app-header h1 {
