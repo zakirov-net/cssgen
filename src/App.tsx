@@ -7,6 +7,7 @@ import './App.css';
 function App() {
   const [selections, setSelections] = useState<Record<string, string[]>>({});
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  const [addClassName, setAddClassName] = useState(false);
 
   const generatedClasses = useMemo(() => {
     const classes: string[] = [];
@@ -39,6 +40,12 @@ function App() {
     return classes.join(' ');
   }, [selections]);
 
+  // Display result: empty when no classes exist, otherwise optionally wrapped in className="..."
+  const displayResult = useMemo(() => {
+    if (!generatedClasses) return '';
+    return addClassName ? `className="${generatedClasses}"` : generatedClasses;
+  }, [generatedClasses, addClassName]);
+
   const handleVariantToggle = (blockId: string, variantId: string, mode: SelectionMode) => {
     setSelections((prev) => {
       const current = prev[blockId] || [];
@@ -68,7 +75,7 @@ function App() {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(generatedClasses);
+      await navigator.clipboard.writeText(displayResult);
     } catch (err) {
       console.error('Failed to copy:', err);
       alert('Failed to copy to clipboard');
@@ -96,11 +103,19 @@ function App() {
           <textarea
             id="generated-classes"
             className="output-textarea"
-            value={generatedClasses}
+            value={displayResult}
             readOnly
             rows={5}
             placeholder="Generated classes will appear here..."
           />
+          <label className="output-option">
+            <input
+              type="checkbox"
+              checked={addClassName}
+              onChange={(e) => setAddClassName(e.target.checked)}
+            />
+            Add className=""
+          </label>
           <div className="button-group">
             <button onClick={handleReset} className="btn btn-reset">
               Reset All

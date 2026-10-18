@@ -86,6 +86,25 @@ body {
   background: white;
 }
 
+.output-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+}
+
+.output-option input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #0066cc;
+}
+
 .button-group {
   display: flex;
   gap: 10px;
