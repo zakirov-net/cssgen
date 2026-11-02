@@ -96,6 +96,11 @@ All switch blocks are configured in `src/config.ts`. To add a new block or modif
 
 Dynamic SVG icons in `src/components/FlexboxIcons.tsx` visually represent flexbox properties. Icons for `justify-content` and `align-items` accept the current `flex-direction` as a parameter so the visual preview adapts to `row`, `row-reverse`, `col`, or `col-reverse`.
 
+The direction is normalized by `normalizeFlexDirection()`, so both the Tailwind-style variant ids used by the config (`col`, `col-reverse`) and the plain CSS values (`column`, `column-reverse`, optionally prefixed with `flex-`) are understood:
+
+- `justify-content` icons are rotated to match the main axis — `row` → 0°, `row-reverse` → 180°, `col` → 90°, `col-reverse` → 270°.
+- `align-items` icons use dedicated SVG variants for the column axes; in `col-reverse` the cross axis is flipped, so `start`/`end` previews are mirrored.
+
 ## Project Structure
 
 ```

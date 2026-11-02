@@ -230,36 +230,102 @@ export const AlignCenterColumn: React.FC = () => (
   </Container>
 );
 
+/** In column: items stretched to full container width */
+export const AlignStretchColumn: React.FC = () => (
+  <Container x={5} y={1} w={14} h={22}>
+    <rect x="5" y="2.5" width="14" height="4" rx="1" fill={C.blue} />
+    <rect x="5" y="9.5" width="14" height="4" rx="1" fill={C.purple} />
+    <rect x="5" y="16.5" width="14" height="4" rx="1" fill={C.green} />
+    <path d="M5 2l-2-1M5 4l-2 1" stroke={C.blue} strokeWidth="0.8" strokeLinecap="round" />
+    <path d="M19 2l2-1M19 4l2 1" stroke={C.green} strokeWidth="0.8" strokeLinecap="round" />
+  </Container>
+);
+
 // ─────────────────────────────────────────────
 // Dynamic icon functions (adapt to flex-direction)
 // ─────────────────────────────────────────────
 
+/**
+ * Flex-direction variants are stored as Tailwind-style ids (`row`, `row-reverse`,
+ * `col`, `col-reverse`), but plain CSS values (`column`, `column-reverse`) are
+ * accepted too so the icons stay in sync with whatever the config/id uses.
+ */
+export type FlexAxis = 'row' | 'row-reverse' | 'column' | 'column-reverse';
+
+export const normalizeFlexDirection = (direction?: string): FlexAxis => {
+  const value = (direction || 'row').trim().toLowerCase().replace(/^flex-/, '');
+  switch (value) {
+    case 'col':
+    case 'column':
+      return 'column';
+    case 'col-reverse':
+    case 'column-reverse':
+      return 'column-reverse';
+    case 'row-reverse':
+      return 'row-reverse';
+    default:
+      return 'row';
+  }
+};
+
 /** Check if flex-direction is a column variant */
-const isColumnDirection = (dir: string) => dir === 'column' || dir === 'column-reverse';
+const isColumnDirection = (dir?: string) => {
+  const axis = normalizeFlexDirection(dir);
+  return axis === 'column' || axis === 'column-reverse';
+};
+
+/**
+ * Rotation (in degrees) of the row-based icon so it matches the main axis
+ * direction of the current flex-direction:
+ * - row           → → (0°)
+ * - row-reverse   → ← (180°)
+ * - column        → ↓ (90°)
+ * - column-reverse→ ↑ (270°)
+ */
+const mainAxisRotation: Record<FlexAxis, number> = {
+  row: 0,
+  'row-reverse': 180,
+  column: 90,
+  'column-reverse': 270,
+};
+
+/** Wrap an icon in a rotated box (returns it untouched when angle is 0) */
+const rotateIcon = (angle: number, baseIcon: React.ReactNode) => {
+  if (!angle) return baseIcon;
+  return (
+    <div
+      style={{
+        transform: `rotate(${angle}deg)`,
+        width: '24px',
+        height: '24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0,
+      }}
+    >
+      {baseIcon}
+    </div>
+  );
+};
 
 /**
  * For justify-content:
- * - row mode  → items distributed horizontally (main axis →)
- * - col mode  → rotate 90° so the same icon shows vertical distribution (main axis ↓)
+ * - row / row-reverse     → items distributed horizontally (main axis →/←)
+ * - column / col-reverse  → same icon rotated 90°/270° (main axis ↓/↑)
  */
-export const getJustifyIcon = (direction: string, baseIcon: React.ReactNode) => {
-  if (isColumnDirection(direction)) {
-    return (
-      <div style={{ transform: 'rotate(90deg)', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        {baseIcon}
-      </div>
-    );
-  }
-  return baseIcon;
-};
+export const getJustifyIcon = (direction: string | undefined, baseIcon: React.ReactNode) =>
+  rotateIcon(mainAxisRotation[normalizeFlexDirection(direction)], baseIcon);
 
 /**
  * For align-items:
  * - row mode  → items aligned along cross axis (vertical ↓)
  * - col mode  → items aligned along cross axis (horizontal →)
- * Column variants have separate SVG components.
+ * Column variants have separate SVG components, so the row icon is only
+ * rotated here as a generic fallback.
  */
-export const getAlignIcon = (_direction: string, baseIcon: React.ReactNode) => baseIcon;
+export const getAlignIcon = (direction: string | undefined, baseIcon: React.ReactNode) =>
+  isColumnDirection(direction) ? rotateIcon(90, baseIcon) : baseIcon;
 
 // ─────────────────────────────────────────────
 // Justify-content dynamic wrappers
@@ -288,34 +354,41 @@ export const JustifySpaceEvenlyDynamic = (flexDirection?: string) =>
 // ─────────────────────────────────────────────
 
 export const AlignStartDynamic = (flexDirection?: string) => {
-  if (isColumnDirection(flexDirection || 'row')) return <AlignStartColumn />;
+  const axis = normalizeFlexDirection(flexDirection);
+  // In column-reverse the cross axis is flipped, so flex-start is on the right
+  if (axis === 'column') return <AlignStartColumn />;
+  if (axis === 'column-reverse') return <AlignEndColumn />;
   return <AlignStart />;
 };
 
 export const AlignEndDynamic = (flexDirection?: string) => {
-  if (isColumnDirection(flexDirection || 'row')) return <AlignEndColumn />;
+  const axis = normalizeFlexDirection(flexDirection);
+  // In column-reverse the cross axis is flipped, so flex-end is on the left
+  if (axis === 'column') return <AlignEndColumn />;
+  if (axis === 'column-reverse') return <AlignStartColumn />;
   return <AlignEnd />;
 };
 
 export const AlignCenterDynamic = (flexDirection?: string) => {
-  if (isColumnDirection(flexDirection || 'row')) return <AlignCenterColumn />;
+  if (isColumnDirection(flexDirection)) return <AlignCenterColumn />;
   return <AlignCenter />;
 };
 
 export const AlignStretchDynamic = (flexDirection?: string) => {
-  if (isColumnDirection(flexDirection || 'row')) {
-    return (
-      <Container x={5} y={1} w={14} h={22}>
-        <rect x="5" y="2.5" width="14" height="4" rx="1" fill={C.blue} />
-        <rect x="5" y="9.5" width="14" height="4" rx="1" fill={C.purple} />
-        <rect x="5" y="16.5" width="14" height="4" rx="1" fill={C.green} />
-        <path d="M5 2l-2-1M5 4l-2 1" stroke={C.blue} strokeWidth="0.8" strokeLinecap="round" />
-        <path d="M19 2l2-1M19 4l2 1" stroke={C.green} strokeWidth="0.8" strokeLinecap="round" />
-      </Container>
-    );
-  }
+  if (isColumnDirection(flexDirection)) return <AlignStretchColumn />;
   return <AlignStretch />;
 };
 
-export const AlignBaselineDynamic = (_flexDirection?: string) => <AlignBaseline />;
+/**
+ * Baseline alignment runs along the cross axis:
+ * - row mode            → horizontal baseline (untouched icon)
+ * - column mode         → rotate 90° (baseline becomes vertical, items extend right)
+ * - column-reverse mode → rotate 270° (baseline becomes vertical, items extend left)
+ */
+export const AlignBaselineDynamic = (flexDirection?: string) => {
+  const axis = normalizeFlexDirection(flexDirection);
+  if (axis === 'column') return rotateIcon(90, <AlignBaseline />);
+  if (axis === 'column-reverse') return rotateIcon(270, <AlignBaseline />);
+  return <AlignBaseline />;
+};
 
